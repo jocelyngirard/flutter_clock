@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_animations/simple_animations/controlled_animation.dart';
 import 'package:simple_animations/simple_animations/multi_track_tween.dart';
 
-class AnimatedBackground extends StatelessWidget {
+class ClockGradient extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final tween = MultiTrackTween([

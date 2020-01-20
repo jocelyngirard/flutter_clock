@@ -4,25 +4,16 @@
 
 import 'dart:async';
 
-import 'package:digital_clock/gradient_background.dart';
+import 'package:digital_clock/widget/clock_digits.dart';
+import 'package:digital_clock/widget/clock_gradient.dart';
+import 'package:digital_clock/widget/clock_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:intl/intl.dart';
 
-import 'clock_number.dart';
-import 'optical_illusion_digits.dart';
-
-enum _Element {
-  background,
-  text,
-  textDisabled,
-  shadow,
-}
-
-final _lightTheme = {_Element.background: Colors.white, _Element.text: Colors.black, _Element.textDisabled: Colors.grey};
-
-final _darkTheme = {_Element.background: Colors.black, _Element.text: Colors.white, _Element.textDisabled: Colors.grey};
+import 'extension/weathercondition_extensions.dart';
+import 'widget/clock_number.dart';
 
 class OpticalIllusionClock extends StatefulWidget {
   const OpticalIllusionClock(this.model);
@@ -62,25 +53,9 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
     super.dispose();
   }
 
-  void _updateModel() {
-    setState(() {
-      // Cause the clock to rebuild when the model changes.
-    });
-  }
-
-  void _updateTime() {
-    setState(() {
-      _dateTime = DateTime.now();
-      _timer = Timer(
-        Duration(minutes: 1) - Duration(seconds: _dateTime.second) - Duration(milliseconds: _dateTime.millisecond),
-        _updateTime,
-      );
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).brightness == Brightness.light ? _lightTheme : _darkTheme;
+    final clockTheme = ClockTheme.of(context).getTheme(context);
 
     final time = DateFormat("${widget.model.is24HourFormat ? 'HH' : 'hh'}mm").format(_dateTime);
     final date = DateFormat.MMMEd().format(_dateTime);
@@ -90,19 +65,20 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
 
     final contentSize = MediaQuery.of(context).size.width / 24;
 
-    var textStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[_Element.text]);
+    final textStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize, color: clockTheme.textColor);
+    final titleStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize * 1.5, color: clockTheme.textColor);
 
-    return OpticalIllusionDigits(
+    return ClockDigits(
       child: Container(
         padding: EdgeInsets.all(16),
-        color: colors[_Element.background],
+        color: clockTheme.backgroundColor,
         child: Column(
           children: <Widget>[
             Stack(
               children: <Widget>[
                 AspectRatio(
                   aspectRatio: 28 / 9,
-                  child: AnimatedBackground(),
+                  child: ClockGradient(),
                 ),
                 Row(
                   children: time.runes.map((rune) => ClockNumber(rune.toInt() - 48)).toList(),
@@ -117,10 +93,7 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                 children: <Widget>[
                   Align(
                     alignment: Alignment.topLeft,
-                    child: Text(
-                      date,
-                      style: textStyle,
-                    ),
+                    child: Text(date, style: titleStyle),
                   ),
                   widget.model.is24HourFormat == false
                       ? Align(
@@ -129,17 +102,27 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                             text: TextSpan(style: textStyle, children: <TextSpan>[
                               TextSpan(
                                 text: "AM",
-                                style:
-                                    TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[ampm == "AM" ? _Element.text : _Element.textDisabled]),
+                                style: TextStyle(
+                                  fontFamily: 'techno',
+                                  fontSize: contentSize,
+                                  color: ampm == "AM" ? clockTheme.textColor : clockTheme.disabledTextColor,
+                                ),
                               ),
                               TextSpan(
                                 text: " | ",
-                                style: TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[_Element.textDisabled]),
+                                style: TextStyle(
+                                  fontFamily: 'techno',
+                                  fontSize: contentSize,
+                                  color: clockTheme.disabledTextColor,
+                                ),
                               ),
                               TextSpan(
                                 text: "PM",
-                                style:
-                                    TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[ampm == "PM" ? _Element.text : _Element.textDisabled]),
+                                style: TextStyle(
+                                  fontFamily: 'techno',
+                                  fontSize: contentSize,
+                                  color: ampm == "PM" ? clockTheme.textColor : clockTheme.disabledTextColor,
+                                ),
                               ),
                             ]),
                           ),
@@ -147,18 +130,13 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                       : Container(),
                   Align(
                     alignment: Alignment.bottomLeft,
-                    child: Text(
-                      location,
-                      style: textStyle,
-                      softWrap: false,
-                      overflow: TextOverflow.ellipsis,
-                    ),
+                    child: Text(location, style: textStyle),
                   ),
                   Align(
                     alignment: Alignment.bottomRight,
                     child: Text(
-                      "${widget.model.temperatureString} ${widget.model.weatherCondition}",
-                      style: textStyle,
+                      "${widget.model.weatherCondition.toEmoji()} ${widget.model.temperatureString}",
+                      style: titleStyle,
                     ),
                   )
                 ],
@@ -168,5 +146,21 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
         ),
       ),
     );
+  }
+
+  void _updateModel() {
+    setState(() {
+      // Cause the clock to rebuild when the model changes.
+    });
+  }
+
+  void _updateTime() {
+    setState(() {
+      _dateTime = DateTime.now();
+      _timer = Timer(
+        Duration(minutes: 1) - Duration(seconds: _dateTime.second) - Duration(milliseconds: _dateTime.millisecond),
+        _updateTime,
+      );
+    });
   }
 }

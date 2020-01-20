@@ -1,7 +1,7 @@
-import 'package:digital_clock/optical_illusion_digits.dart';
 import 'package:flutter/material.dart';
 
-import 'clock_tile.dart';
+import '../painter/clock_tile_painter.dart';
+import 'clock_digits.dart';
 
 class ClockNumber extends StatefulWidget {
   final int number;
@@ -18,7 +18,7 @@ class _ClockNumberState extends State<ClockNumber> {
     return Expanded(
       flex: 1,
       child: Column(
-        children: OpticalIllusionDigits.of(context)
+        children: ClockDigits.of(context)
             .digits[widget.number]
             .split("\n")
             .map(

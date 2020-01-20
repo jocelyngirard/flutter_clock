@@ -4,6 +4,7 @@
 
 import 'dart:io';
 
+import 'package:digital_clock/widget/clock_theme.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_clock_helper/customizer.dart';
@@ -21,7 +22,7 @@ void main() {
 
   runApp(
     ClockCustomizer(
-      (ClockModel model) => OpticalIllusionClock(model),
+      (ClockModel model) => ClockTheme(child: OpticalIllusionClock(model)),
     ),
   );
 }
