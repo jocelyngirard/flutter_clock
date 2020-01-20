@@ -56,13 +56,10 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
   @override
   Widget build(BuildContext context) {
     final clockTheme = ClockTheme.of(context).getTheme(context);
-    final toto = Theme.of(context).brightness == Brightness.light;
 
     final time = DateFormat("${widget.model.is24HourFormat ? 'HH' : 'hh'}mm").format(_dateTime);
     final date = DateFormat.MMMEd().format(_dateTime);
     final ampm = DateFormat('a').format(_dateTime);
-
-    final location = widget.model.location.toString();
 
     final contentSize = MediaQuery.of(context).size.width / 24;
 
@@ -136,7 +133,7 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                       children: <Widget>[
                         Expanded(
                           child: Text(
-                            location,
+                            widget.model.location.toString(),
                             style: textStyle,
                             overflow: TextOverflow.ellipsis,
                           ),
