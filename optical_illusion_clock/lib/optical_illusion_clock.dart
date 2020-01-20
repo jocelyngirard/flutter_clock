@@ -16,18 +16,13 @@ import 'optical_illusion_digits.dart';
 enum _Element {
   background,
   text,
+  textDisabled,
   shadow,
 }
 
-final _lightTheme = {
-  _Element.background: Colors.white,
-  _Element.text: Colors.white,
-};
+final _lightTheme = {_Element.background: Colors.white, _Element.text: Colors.black, _Element.textDisabled: Colors.grey};
 
-final _darkTheme = {
-  _Element.background: Colors.black,
-  _Element.text: Colors.white,
-};
+final _darkTheme = {_Element.background: Colors.black, _Element.text: Colors.white, _Element.textDisabled: Colors.grey};
 
 class OpticalIllusionClock extends StatefulWidget {
   const OpticalIllusionClock(this.model);
@@ -86,14 +81,22 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).brightness == Brightness.light ? _lightTheme : _darkTheme;
+
     final time = DateFormat("${widget.model.is24HourFormat ? 'HH' : 'hh'}mm").format(_dateTime);
+    final date = DateFormat.MMMEd().format(_dateTime);
+    final ampm = DateFormat('a').format(_dateTime);
+
+    final location = widget.model.location.toString();
+
+    final contentSize = MediaQuery.of(context).size.width / 24;
+
+    var textStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[_Element.text]);
 
     return OpticalIllusionDigits(
       child: Container(
         padding: EdgeInsets.all(16),
         color: colors[_Element.background],
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
             Stack(
               children: <Widget>[
@@ -106,18 +109,60 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                 )
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                Text(
-                  widget.model.location,
-                  style: TextStyle(fontFamily: 'square-deal', fontSize: MediaQuery.of(context).size.width / 16),
-                ),
-                Text(
-                  widget.model.temperatureString,
-                  style: TextStyle(fontFamily: 'square-deal', fontSize: MediaQuery.of(context).size.width / 16),
-                )
-              ],
+            Padding(
+              padding: EdgeInsets.only(top: 16),
+            ),
+            Expanded(
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.topLeft,
+                    child: Text(
+                      date,
+                      style: textStyle,
+                    ),
+                  ),
+                  widget.model.is24HourFormat == false
+                      ? Align(
+                          alignment: Alignment.topRight,
+                          child: RichText(
+                            text: TextSpan(style: textStyle, children: <TextSpan>[
+                              TextSpan(
+                                text: "AM",
+                                style:
+                                    TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[ampm == "AM" ? _Element.text : _Element.textDisabled]),
+                              ),
+                              TextSpan(
+                                text: " | ",
+                                style: TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[_Element.textDisabled]),
+                              ),
+                              TextSpan(
+                                text: "PM",
+                                style:
+                                    TextStyle(fontFamily: 'techno', fontSize: contentSize, color: colors[ampm == "PM" ? _Element.text : _Element.textDisabled]),
+                              ),
+                            ]),
+                          ),
+                        )
+                      : Container(),
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Text(
+                      location,
+                      style: textStyle,
+                      softWrap: false,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Text(
+                      "${widget.model.temperatureString} ${widget.model.weatherCondition}",
+                      style: textStyle,
+                    ),
+                  )
+                ],
+              ),
             ),
           ],
         ),
