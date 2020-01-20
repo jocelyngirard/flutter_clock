@@ -56,6 +56,7 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
   @override
   Widget build(BuildContext context) {
     final clockTheme = ClockTheme.of(context).getTheme(context);
+    final toto = Theme.of(context).brightness == Brightness.light;
 
     final time = DateFormat("${widget.model.is24HourFormat ? 'HH' : 'hh'}mm").format(_dateTime);
     final date = DateFormat.MMMEd().format(_dateTime);
@@ -78,7 +79,7 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
               children: <Widget>[
                 AspectRatio(
                   aspectRatio: 28 / 9,
-                  child: ClockGradient(),
+                  child: ClockGradient(gradientColors: clockTheme.gradientColors),
                 ),
                 Row(children: time.runes.map((rune) => ClockNumber(rune.toInt() - 48)).toList())
               ],
@@ -127,16 +128,26 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                         )
                       : Container(),
                   Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Text(location, style: textStyle),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Text(
-                      "${widget.model.weatherCondition.toEmoji()} ${widget.model.temperatureString}",
-                      style: titleStyle,
+                    alignment: Alignment.bottomCenter,
+                    child: Row(
+                      mainAxisSize: MainAxisSize.max,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: <Widget>[
+                        Expanded(
+                          child: Text(
+                            location,
+                            style: textStyle,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                        Text(
+                          "${widget.model.weatherCondition.toEmoji()} ${widget.model.temperatureString}",
+                          style: titleStyle,
+                        ),
+                      ],
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

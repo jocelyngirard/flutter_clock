@@ -20,10 +20,10 @@ class ClockTheme extends InheritedWidget {
     textColor: Colors.white70,
     disabledTextColor: Colors.white10,
     gradientColors: [
-      Colors.grey,
-      Colors.white12,
-      Colors.white30,
-      Colors.white70,
+      Color(0xFF32243e),
+      Color(0xFF355C7D),
+      Color(0xFF302b63),
+      Color(0x88C06C84),
     ],
   );
 
