@@ -4,8 +4,9 @@ import 'package:flutter/material.dart';
 
 class ClockTilePainter extends CustomPainter {
   final bool isActive;
+  final Color backgroundColor;
 
-  ClockTilePainter({this.isActive = false});
+  ClockTilePainter({this.isActive = false, this.backgroundColor = Colors.white});
 
   @override
   bool shouldRepaint(ClockTilePainter oldDelegate) {
@@ -26,7 +27,7 @@ class ClockTilePainter extends CustomPainter {
     }
 
     var paint = Paint()
-      ..color = Colors.white
+      ..color = backgroundColor
       ..isAntiAlias = true
       ..strokeWidth = quarter;
 

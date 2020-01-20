@@ -11,12 +11,12 @@ extension WeatherConditionEmoji on WeatherCondition {
         return "🌧";
       case WeatherCondition.snowy:
         return "🌨";
-      case WeatherCondition.sunny:
-        return "🔆";
+      case WeatherCondition.windy:
+        return "🌬";
       case WeatherCondition.thunderstorm:
         return "⛈";
       default:
-        return "🌬";
+        return "🔆";
     }
   }
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../painter/clock_tile_painter.dart';
 import 'clock_digits.dart';
+import 'clock_theme.dart';
 
 class ClockNumber extends StatefulWidget {
   final int number;
@@ -15,6 +16,8 @@ class ClockNumber extends StatefulWidget {
 class _ClockNumberState extends State<ClockNumber> {
   @override
   Widget build(BuildContext context) {
+    final clockTheme = ClockTheme.of(context).getTheme(context);
+
     return Expanded(
       flex: 1,
       child: Column(
@@ -31,7 +34,7 @@ class _ClockNumberState extends State<ClockNumber> {
                       child: AspectRatio(
                         aspectRatio: 1,
                         child: CustomPaint(
-                          painter: ClockTilePainter(isActive: rune.toString() == "49"),
+                          painter: ClockTilePainter(isActive: rune.toString() == "49", backgroundColor: clockTheme.backgroundColor),
                           child: Container(),
                         ),
                       ),

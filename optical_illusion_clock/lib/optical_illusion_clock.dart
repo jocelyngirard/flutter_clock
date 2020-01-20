@@ -66,7 +66,7 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
     final contentSize = MediaQuery.of(context).size.width / 24;
 
     final textStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize, color: clockTheme.textColor);
-    final titleStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize * 1.5, color: clockTheme.textColor);
+    final titleStyle = TextStyle(fontFamily: 'techno', fontSize: contentSize * 1.8, color: clockTheme.textColor);
 
     return ClockDigits(
       child: Container(
@@ -80,9 +80,7 @@ class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
                   aspectRatio: 28 / 9,
                   child: ClockGradient(),
                 ),
-                Row(
-                  children: time.runes.map((rune) => ClockNumber(rune.toInt() - 48)).toList(),
-                )
+                Row(children: time.runes.map((rune) => ClockNumber(rune.toInt() - 48)).toList())
               ],
             ),
             Padding(
