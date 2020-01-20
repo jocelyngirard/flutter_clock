@@ -1,26 +1,46 @@
+import 'package:digital_clock/optical_illusion_digits.dart';
 import 'package:flutter/material.dart';
 
 import 'clock_tile.dart';
 
 class ClockNumber extends StatefulWidget {
+  final int number;
+
+  const ClockNumber(this.number, {Key key}) : super(key: key);
+
   @override
   _ClockNumberState createState() => _ClockNumberState();
 }
 
 class _ClockNumberState extends State<ClockNumber> {
-
-
-
-
-
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: GridView.count(
-        crossAxisCount: 7,
-        children: List.generate(63, (index) {
-          return CustomPaint(painter: ClockTilePainter(), child: Container());
-        }),
+    return Expanded(
+      flex: 1,
+      child: Column(
+        children: OpticalIllusionDigits.of(context)
+            .digits[widget.number]
+            .split("\n")
+            .map(
+              (line) => Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: List.from(
+                  line.runes.map(
+                    (rune) => Expanded(
+                      flex: 1,
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: CustomPaint(
+                          painter: ClockTilePainter(isActive: rune.toString() == "49"),
+                          child: Container(),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }

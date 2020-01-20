@@ -17,7 +17,7 @@ class ClockTilePainter extends CustomPainter {
     var quarter = sqrt(pow(size.width, 2) + pow(size.height, 2)) / 4;
     var outsideOffset = quarter / 2;
 
-    canvas.clipRect(Rect.fromPoints(Offset(0, 0), Offset(size.width, size.height)));
+    canvas.clipRect(Rect.fromPoints(Offset(-.3, -.3), Offset(size.width + .3, size.height + .3)));
 
     if (isActive) {
       canvas.save();
@@ -26,19 +26,17 @@ class ClockTilePainter extends CustomPainter {
     }
 
     var paint = Paint()
-      ..color = Colors.black
+      ..color = Colors.white
+      ..isAntiAlias = true
       ..strokeWidth = quarter;
 
-    canvas.drawLine(
-      Offset(0 - outsideOffset, size.height / 2 - outsideOffset),
-      Offset(size.width / 2 + outsideOffset, size.height + outsideOffset),
-      paint,
-    );
-    canvas.drawLine(
-      Offset(size.width / 2 - outsideOffset, 0 - outsideOffset),
-      Offset(size.width + outsideOffset, size.height / 2 + outsideOffset),
-      paint,
-    );
+    var x1 = Offset(0 - outsideOffset, size.height / 2 - outsideOffset);
+    var y1 = Offset(size.width / 2 + outsideOffset, size.height + outsideOffset);
+    canvas.drawLine(x1, y1, paint);
+
+    var x2 = Offset(size.width / 2 - outsideOffset, 0 - outsideOffset);
+    var y2 = Offset(size.width + outsideOffset, size.height / 2 + outsideOffset);
+    canvas.drawLine(x2, y2, paint);
 
     if (isActive) {
       canvas.restore();

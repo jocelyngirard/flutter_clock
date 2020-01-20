@@ -4,11 +4,14 @@
 
 import 'dart:async';
 
-import 'package:digital_clock/clock_tile.dart';
+import 'package:digital_clock/gradient_background.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_clock_helper/model.dart';
 import 'package:intl/intl.dart';
+
+import 'clock_number.dart';
+import 'optical_illusion_digits.dart';
 
 enum _Element {
   background,
@@ -26,19 +29,16 @@ final _darkTheme = {
   _Element.text: Colors.white,
 };
 
-/// A basic digital clock.
-///
-/// You can do better than this!
-class DigitalClock extends StatefulWidget {
-  const DigitalClock(this.model);
+class OpticalIllusionClock extends StatefulWidget {
+  const OpticalIllusionClock(this.model);
 
   final ClockModel model;
 
   @override
-  _DigitalClockState createState() => _DigitalClockState();
+  _OpticalIllusionClockState createState() => _OpticalIllusionClockState();
 }
 
-class _DigitalClockState extends State<DigitalClock> {
+class _OpticalIllusionClockState extends State<OpticalIllusionClock> {
   DateTime _dateTime = DateTime.now();
   Timer _timer;
 
@@ -51,7 +51,7 @@ class _DigitalClockState extends State<DigitalClock> {
   }
 
   @override
-  void didUpdateWidget(DigitalClock oldWidget) {
+  void didUpdateWidget(OpticalIllusionClock oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (widget.model != oldWidget.model) {
       oldWidget.model.removeListener(_updateModel);
@@ -76,51 +76,52 @@ class _DigitalClockState extends State<DigitalClock> {
   void _updateTime() {
     setState(() {
       _dateTime = DateTime.now();
-      // Update once per minute. If you want to update every second, use the
-      // following code.
       _timer = Timer(
         Duration(minutes: 1) - Duration(seconds: _dateTime.second) - Duration(milliseconds: _dateTime.millisecond),
         _updateTime,
       );
-      // Update once per second, but make sure to do it at the beginning of each
-      // new second, so that the clock is accurate.
-      // _timer = Timer(
-      //   Duration(seconds: 1) - Duration(milliseconds: _dateTime.millisecond),
-      //   _updateTime,
-      // );
     });
   }
 
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).brightness == Brightness.light ? _lightTheme : _darkTheme;
-    final hour = DateFormat(widget.model.is24HourFormat ? 'HH' : 'hh').format(_dateTime);
-    final minute = DateFormat('mm').format(_dateTime);
+    final time = DateFormat("${widget.model.is24HourFormat ? 'HH' : 'hh'}mm").format(_dateTime);
 
-    return Container(
-        padding: EdgeInsets.all(32),
+    return OpticalIllusionDigits(
+      child: Container(
+        padding: EdgeInsets.all(16),
         color: colors[_Element.background],
-        child: Center(
-            child: Column(
-                children: """0000000
-0111110
-0100010
-0100010
-0100010
-0100010
-0100010
-0111110
-0000000
-"""
-                    .split("\n")
-                    .map((line) => Row(
-                          children: List.from(line.runes.map((rune) => CustomPaint(
-                              painter: ClockTilePainter(isActive: rune.toString() == "49"),
-                              child: SizedBox(
-                                width: 32,
-                                height: 32,
-                              )))),
-                        ))
-                    .toList())));
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: <Widget>[
+            Stack(
+              children: <Widget>[
+                AspectRatio(
+                  aspectRatio: 28 / 9,
+                  child: AnimatedBackground(),
+                ),
+                Row(
+                  children: time.runes.map((rune) => ClockNumber(rune.toInt() - 48)).toList(),
+                )
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Text(
+                  widget.model.location,
+                  style: TextStyle(fontFamily: 'square-deal', fontSize: MediaQuery.of(context).size.width / 16),
+                ),
+                Text(
+                  widget.model.temperatureString,
+                  style: TextStyle(fontFamily: 'square-deal', fontSize: MediaQuery.of(context).size.width / 16),
+                )
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
